@@ -173,6 +173,11 @@ function(Tooltip) {
 		return this.node;
 	};
 
+  MultiTierTooltip.prototype.setPosition = function( x, y, orientation ){
+    var arrowBBox = this._tooltipArrow.getBBox();
+    Tooltip.prototype.setPosition.call( this, x, y + arrowBBox.y, orientation);
+  };
+
 	MultiTierTooltip.prototype._positionTooltipArrow = function(tooltipPlacement) {
 
 		var transformMatrix = Snap.matrix();
