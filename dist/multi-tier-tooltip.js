@@ -148,6 +148,23 @@ function(Tooltip) {
 				stroke: 'white'
 			});
 
+		var tooltipBGOverlay = paper.rect(
+			tooltipBGBBox.x,
+			tooltipBGBBox.y,
+			tooltipBGBBox.width,
+			tooltipBGBBox.height,
+			TOOLTIP_BORDER_RADIUS
+		);
+		var tooltipBGMask = paper.rect(
+			tooltipBGBBox.x,
+			this.groupBoundary,
+			tooltipBGBBox.width,
+			tooltipBGBBox.height - this.groupBoundary
+		)
+			.attr('fill', 'white');
+		tooltipBGOverlay.attr('mask', tooltipBGMask);
+		tooltipBGOverlay.addClass(this.colorClass + ' tint-1');
+
 		titleText.transform('t ' + (tmpBBox.width / 2 - titleText.getBBox().width / 2) + ' 0');
 
 		// Render the arrow
