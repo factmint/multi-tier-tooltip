@@ -179,6 +179,7 @@ function(Tooltip) {
 
 		// Add to the group
 		this.node.append(tooltipBG);
+		this.node.append(tooltipBGOverlay);
 		this.node.append(tooltipText);
 		this.node.append(tooltipArrow);
 		this.node.append(separator);
