@@ -3,7 +3,7 @@ function(Tooltip) {
 
 	var TOOLTIP_OFFSET_X = 10;
 	var TOOLTIP_OFFSET_Y = 20;
-	var TOOLTIP_PADDING_TOP = 5;
+	var TOOLTIP_PADDING_TOP = 7;
 	var TOOLTIP_PADDING_BOTTOM = 10;
 	var TOOLTIP_PADDING_LEFT = 10;
 	var TOOLTIP_PADDING_RIGHT = 10;
@@ -28,10 +28,10 @@ function(Tooltip) {
 		var paper = this._paper;
 		var tmpBBox = null;
 
-		if (this.node !== null) {
+		if (this.snapElement !== null) {
 			this.remove();
 		}
-		this.node = paper.g();
+		this.snapElement = paper.g();
 
 		// Render the text
 		var tooltipText;
@@ -52,14 +52,15 @@ function(Tooltip) {
 
 		var detailTitlesElement = paper.multitext(
 			TOOLTIP_PADDING_LEFT,
-			TOOLTIP_PADDING_TOP + GROUP_SPACING + titleText.getBBox().height,
+			titleText.getBBox().y + titleText.getBBox().height,
 			detailTitles.join('\n'),
 			TOOLTIP_LINE_HEIGHT + 'em'
 		);
+		detailTitlesElement.transform('t0 ' + (detailTitlesElement.getBBox().height));
 
 		var detailValuesElement = paper.multitext(
 			TOOLTIP_PADDING_LEFT,
-			TOOLTIP_PADDING_TOP + GROUP_SPACING + titleText.getBBox().height,
+			titleText.getBBox().y + titleText.getBBox().height,
 			detailValues.join('\n'),
 			TOOLTIP_LINE_HEIGHT + 'em',
 			'end'
@@ -74,14 +75,14 @@ function(Tooltip) {
 
 		var extraDetailTitlesElement = paper.multitext(
 			TOOLTIP_PADDING_LEFT,
-			TOOLTIP_PADDING_TOP + GROUP_SPACING * 2 + titleText.getBBox().height + detailTitlesElement.getBBox().height,
+			detailTitlesElement.getBBox().y + GROUP_SPACING * 2 + parseInt(TEXT_SIZE_SMALL, 10) * 2,
 			extraDetailTitles.join('\n'),
 			TOOLTIP_LINE_HEIGHT + 'em'
-		)
+		);
 
 		var extraDetailValuesElement = paper.multitext(
 			TOOLTIP_PADDING_LEFT,
-			TOOLTIP_PADDING_TOP + GROUP_SPACING * 2 + titleText.getBBox().height + detailTitlesElement.getBBox().height,
+			detailTitlesElement.getBBox().y + GROUP_SPACING * 2 + parseInt(TEXT_SIZE_SMALL, 10) * 2,
 			extraDetailValues.join('\n'),
 			TOOLTIP_LINE_HEIGHT + 'em',
 			'end'
@@ -107,7 +108,7 @@ function(Tooltip) {
 			largestValuesElementWidth = extraDetailValuesElementBBox.width;
 		}
 
-		detailValuesElement.transform('t ' + (largestTitlesElementWidth + largestValuesElementWidth) + ' 0');
+		detailValuesElement.transform('t ' + (largestTitlesElementWidth + largestValuesElementWidth) + ' ' + (detailValuesElement.getBBox().height));
 		extraDetailValuesElement.transform('t ' + (largestTitlesElementWidth + largestValuesElementWidth) + ' 0');
 		
 		tooltipText.append(detailTitlesElement);
@@ -136,7 +137,7 @@ function(Tooltip) {
 		this._tooltipBG = tooltipBG;
 
 		var tooltipBGBBox = tooltipBG.getBBox();
-		this.groupBoundary = TOOLTIP_PADDING_TOP + GROUP_SPACING + titleText.getBBox().height + detailTitlesElement.getBBox().height;
+		this.groupBoundary = detailTitlesElement.getBBox().y + GROUP_SPACING + parseInt(TEXT_SIZE_SMALL, 10);
 
 		var separator = paper.line(
 			0,
@@ -178,18 +179,23 @@ function(Tooltip) {
 		this._positionTooltipArrow(this._tooltipPlacement);
 
 		// Add to the group
-		this.node.append(tooltipBG);
-		this.node.append(tooltipBGOverlay);
-		this.node.append(tooltipText);
-		this.node.append(tooltipArrow);
-		this.node.append(separator);
+		this.snapElement.append(tooltipBG);
+		this.snapElement.append(tooltipBGOverlay);
+		this.snapElement.append(tooltipText);
+		this.snapElement.append(tooltipArrow);
+		this.snapElement.append(separator);
 
-		this.node.addClass('fm-tooltip');
+		this.snapElement.addClass('fm-tooltip');
 
 		this.hide();
 
-		return this.node;
+		return this.snapElement;
 	};
+
+  MultiTierTooltip.prototype.setPosition = function( x, y, orientation ){
+    var arrowBBox = this._tooltipArrow.getBBox();
+    Tooltip.prototype.setPosition.call( this, x, y + arrowBBox.y, orientation);
+  };
 
 	MultiTierTooltip.prototype._positionTooltipArrow = function(tooltipPlacement) {
 
