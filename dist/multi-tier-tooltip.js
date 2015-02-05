@@ -15,9 +15,9 @@ function(Tooltip) {
 	var TEXT_SIZE_SMALL = "12px";
 	var FONT_FAMILY = "'Lato', sans-serif";
 
-	function MultiTierTooltip(paper, colorClass) {
+	function MultiTierTooltip(paper, tooltipClass, colorClass) {
 
-		Tooltip.call(this, paper, colorClass);
+		Tooltip.call(this, paper, tooltipClass, colorClass);
 
 	}
 
