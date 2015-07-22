@@ -192,11 +192,58 @@ function(Tooltip) {
 		return this.snapElement;
 	};
 
-  MultiTierTooltip.prototype.setPosition = function( x, y, orientation ){
-    var arrowBBox = this._tooltipArrow.getBBox();
-    Tooltip.prototype.setPosition.call( this, x, y + arrowBBox.y, orientation);
-  };
+  	/**
+	 * Sets the position for the tooltip to go
+	 * @param {Number} x								
+	 * @param {Number} y								
+	 * @param {String} tooltipPlacement The position for the tooltip to go
+	 */
+	MultiTierTooltip.prototype.setPosition = function(x, y, tooltipPlacement) {
 
+		if (! this.snapElement) {
+			return;
+		}
+
+		if( tooltipPlacement === undefined ){
+			tooltipPlacement = this._tooltipPlacement;
+		} else if(tooltipPlacement !== this._tooltipPlacement) {
+			this._positionTooltipArrow(tooltipPlacement);
+		}
+
+		var tooltipArrowBBox = this._tooltipArrow.getBBox();
+		var tooltipBGBBox = this._tooltipBG.getBBox();
+
+		switch(tooltipPlacement) {
+			case "left":
+				x = x - tooltipArrowBBox.width - tooltipBGBBox.width;
+				y = y - (this.groupBoundary / 2) - 2;
+				break;
+
+			case "right":
+				x = x + tooltipArrowBBox.width;
+				y = y - (this.groupBoundary / 2) - 2;
+				break;
+
+			case "top":
+				x = x - tooltipArrowBBox.width - tooltipBGBBox.width;
+				y = y - tooltipArrowBBox.height;
+				break;
+
+			case "bottom":
+				x = x + tooltipArrowBBox.width;
+				y = y + tooltipArrowBBox.height;
+				break;
+				
+			case "none":
+				x = x;
+				y = y;
+				break;
+		}
+
+		this.snapElement.transform("T" + x + "," + y);
+
+	};
+    
 	MultiTierTooltip.prototype._positionTooltipArrow = function(tooltipPlacement) {
 
 		var transformMatrix = Snap.matrix();
@@ -226,6 +273,11 @@ function(Tooltip) {
 				transformMatrix.rotate(90);
 				this._tooltipArrow.transform(transformMatrix.toTransformString());
 				break;
+				
+			case "none":
+				this._tooltipArrow.remove();
+				break;
+
 
 		}
 
